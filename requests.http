@@ -5,8 +5,8 @@ POST http://localhost:3000/api/blogs
 Content-Type: application/json
 
 {
-  "title": "What is Javascript?",
-  "author": "Regmi",
+  "title": "A new blog",
+  "author": "DevYojan",
   "url": "https://yojanregmi.com.np",
   "likes": 0
 }
