@@ -5,7 +5,7 @@ POST http://localhost:3000/api/blogs
 Content-Type: application/json
 
 {
-  "title": "A new blog",
+  "title": "Final Refactor",
   "author": "DevYojan",
   "url": "https://yojanregmi.com.np",
   "likes": 0

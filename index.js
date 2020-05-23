@@ -1,9 +1,9 @@
-const config = require('./utils/config');
-const http = require('http');
 const app = require('./app');
+const config = require('./utils/config');
+const logger = require('./utils/logger');
 
 require('dotenv').config();
 
 app.listen(config.PORT, () => {
-	console.log('App started at port 3000');
+	logger.info('App started at port 3000');
 });
