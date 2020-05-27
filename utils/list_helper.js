@@ -57,4 +57,35 @@ const mostBlogs = (blogs) => {
 	return authorWithMaxBlogs;
 };
 
-module.exports = { dummy, totalLikes, favoriteBlog, mostBlogs };
+const mostLikes = (blogs) => {
+	if (blogs.length === 0) {
+		return {};
+	}
+
+	let blogAuthors = {};
+
+	for (blog of blogs) {
+		if (!blogAuthors.hasOwnProperty(blog.author)) {
+			blogAuthors[blog.author] = blog.likes;
+			continue;
+		}
+
+		blogAuthors[blog.author] += blog.likes;
+	}
+
+	let authorWithMaxLikes = {
+		author: '',
+		likes: 0,
+	};
+
+	for (let [author, noOfLikes] of Object.entries(blogAuthors)) {
+		if (noOfLikes > authorWithMaxLikes.likes) {
+			authorWithMaxLikes.author = author;
+			authorWithMaxLikes.likes = noOfLikes;
+		}
+	}
+
+	return authorWithMaxLikes;
+};
+
+module.exports = { dummy, totalLikes, favoriteBlog, mostBlogs, mostLikes };
