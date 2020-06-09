@@ -32,6 +32,23 @@ test('unique identifier property of the blog posts is id', async () => {
 	});
 });
 
+test('making a post request creates a new blog post', async () => {
+	const newBlog = {
+		title: 'Created By Post',
+		author: 'DevYojan',
+		url: 'https://yojanregmi.com.np',
+		likes: 0,
+	};
+
+	await api.post('/api/blogs').send(newBlog).expect(201);
+
+	const blogsInDb = await helper.blogsInDb();
+	expect(blogsInDb).toHaveLength(helper.initialBlog.length + 1);
+
+	const contents = blogsInDb.map((blog) => blog.title);
+	expect(contents).toContain(newBlog.title);
+});
+
 afterAll(() => {
 	mongoose.connection.close();
 });
