@@ -49,6 +49,17 @@ test('making a post request creates a new blog post', async () => {
 	expect(contents).toContain(newBlog.title);
 });
 
+test('if like property is missing it is defaulted to 0', async () => {
+	const testBlog = {
+		title: 'Created By Test Post',
+		author: 'DevYojan',
+		url: 'https://yojanregmi.com.np',
+	};
+
+	const response = await api.post('/api/blogs').send(testBlog).expect(201);
+	expect(response.body.likes).toBe(0);
+});
+
 afterAll(() => {
 	mongoose.connection.close();
 });
