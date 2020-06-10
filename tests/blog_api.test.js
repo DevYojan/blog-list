@@ -60,6 +60,21 @@ test('if like property is missing it is defaulted to 0', async () => {
 	expect(response.body.likes).toBe(0);
 });
 
+test('if title and url are missing response is 400', async () => {
+	const withoutTitle = {
+		author: 'DevYojan',
+		url: 'https://yojanregmi.com.np',
+	};
+
+	const response = await api.post('/api/blogs').send(withoutTitle).expect(400);
+
+	const withoutAuthor = {
+		title: 'With Title but without author',
+	};
+
+	await api.post('/api/blogs').send(withoutAuthor).expect(400);
+});
+
 afterAll(() => {
 	mongoose.connection.close();
 });
