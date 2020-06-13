@@ -9,3 +9,6 @@ Content-Type: application/json
   "author": "DevYojan",
   "url": "https://yojanregmi.com.np"
 }
+
+###
+DELETE  http://localhost:3000/api/blogs/5ec9521ab2307ee632c050f6
