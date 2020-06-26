@@ -7,7 +7,7 @@ const api = supertest(app);
 const Blog = require('../models/blog');
 
 beforeEach(async () => {
-	jest.useFakeTimers();
+	jest.useFakeTimers();	
 	await Blog.deleteMany({});
 
 	const blogObjects = helper.initialBlog.map((blog) => new Blog(blog));
