@@ -21,3 +21,18 @@ Content-Type: application/json
 {
   "likes": 250
 }
+
+
+###
+GET http://localhost:3000/api/users
+
+
+###
+POST http://localhost:3000/api/users
+Content-Type: application/json
+
+{
+  "username": "regmibhai",
+  "name": "Regmi",
+  "password": "password"
+}
