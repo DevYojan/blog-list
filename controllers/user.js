@@ -11,6 +11,22 @@ userRouter.get('/', async (request, response) => {
 userRouter.post('/', async (request, response) => {
 	const body = request.body;
 
+	if (!body.username || !body.password) {
+		return response.json({ message: 'username and password are required' });
+	}
+
+	if (body.username.length < 3) {
+		return response.json({
+			message: 'username must be at least 3 characters long',
+		});
+	}
+
+	if (body.password.length < 3) {
+		return response.json({
+			message: 'password must be at least 3 characters long',
+		});
+	}
+
 	const checkUser = User.findOne({ username: body.username }, async function (
 		err,
 		user
