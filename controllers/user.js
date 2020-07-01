@@ -12,17 +12,19 @@ userRouter.post('/', async (request, response) => {
 	const body = request.body;
 
 	if (!body.username || !body.password) {
-		return response.json({ message: 'username and password are required' });
+		return response
+			.status(400)
+			.json({ message: 'username and password are required' });
 	}
 
 	if (body.username.length < 3) {
-		return response.json({
+		return response.status(400).json({
 			message: 'username must be at least 3 characters long',
 		});
 	}
 
 	if (body.password.length < 3) {
-		return response.json({
+		return response.status(400).json({
 			message: 'password must be at least 3 characters long',
 		});
 	}
@@ -32,7 +34,7 @@ userRouter.post('/', async (request, response) => {
 		user
 	) {
 		if (user) {
-			return response.json({ message: 'username already taken' });
+			return response.status(400).json({ message: 'username already taken' });
 		}
 
 		const saltRounds = 10;

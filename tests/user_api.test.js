@@ -5,6 +5,7 @@ const api = supertest(app);
 const helper = require('./test_helper');
 
 const User = require('../models/user');
+const { usersInDb } = require('./test_helper');
 
 beforeEach(async () => {
 	await User.deleteMany({});
@@ -33,10 +34,75 @@ describe('creating a new user', () => {
 		expect(usersAfter).toHaveLength(usersBefore.length + 1);
 	});
 
-	//TODO fails if username is shorter then 3 characters
-	//TODO fails if password is shorter then 3 characters
-	//TODO fails if username is not provided
-	//TODO fails if password is not provided
+	test('fails with proper error message if username is shorter then 3 characters', async () => {
+		const usersBefore = await helper.usersInDb();
+
+		const newUser = {
+			username: 'pa',
+			name: 'Programmer Regmi',
+			password: 'hackerman',
+		};
+
+		const result = await api.post('/api/users').send(newUser).expect(400);
+
+		expect(result.body.message).toContain(
+			'username must be at least 3 characters long'
+		);
+
+		const usersAfter = await helper.usersInDb();
+		expect(usersAfter).toHaveLength(usersBefore.length);
+	});
+
+	test('fails with proper error message if password is shorter then 3 characters', async () => {
+		const usersBefore = await helper.usersInDb();
+
+		const newUser = {
+			username: 'hackerman',
+			name: 'Programmer Regmi',
+			password: 'h',
+		};
+
+		const result = await api.post('/api/users').send(newUser).expect(400);
+
+		expect(result.body.message).toContain(
+			'password must be at least 3 characters long'
+		);
+
+		const usersAfter = await helper.usersInDb();
+		expect(usersAfter).toHaveLength(usersBefore.length);
+	});
+
+	test('fails with proper error message if username is not provided', async () => {
+		const usersBefore = await helper.usersInDb();
+
+		const newUser = {
+			name: 'Programmer Regmi',
+			password: 'hackerman',
+		};
+
+		const result = await api.post('/api/users').send(newUser).expect(400);
+
+		expect(result.body.message).toContain('username and password are required');
+
+		const usersAfter = await helper.usersInDb();
+		expect(usersAfter).toHaveLength(usersBefore.length);
+	});
+
+	test('fails with proper error message if password is not provided', async () => {
+		const usersBefore = await helper.usersInDb();
+
+		const newUser = {
+			username: 'hackerman',
+			name: 'Programmer Regmi',
+		};
+
+		const result = await api.post('/api/users').send(newUser).expect(400);
+
+		expect(result.body.message).toContain('username and password are required');
+
+		const usersAfter = await helper.usersInDb();
+		expect(usersAfter).toHaveLength(usersBefore.length);
+	});
 });
 
 afterAll(() => {
