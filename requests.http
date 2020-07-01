@@ -7,7 +7,9 @@ Content-Type: application/json
 
 {
   "author": "DevYojan",
-  "url": "https://yojanregmi.com.np"
+  "url": "https://yojanregmi.com.np",
+  "title": "First blog without user"
+
 }
 
 ###
@@ -32,6 +34,7 @@ POST http://localhost:3000/api/users
 Content-Type: application/json
 
 {
-  "username": "aaa",
-  "name": "Regmi"
+  "username": "yojan",
+  "name": "Yojan",
+  "password": "password"
 }
