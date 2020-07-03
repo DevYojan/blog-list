@@ -1,6 +1,18 @@
 const logger = require('./logger');
 const { response } = require('express');
 
+const tokenExtractor = (req, res, next) => {
+	const authorization = req.get('authorization');
+
+	req.token = null;
+
+	if (authorization && authorization.toLowerCase().startsWith('bearer')) {
+		req.token = authorization.substring(7);
+	}
+
+	next();
+};
+
 const requestLogger = (req, res, next) => {
 	logger.info('Method: ', req.method);
 	logger.info('Path: ', req.path);
@@ -31,4 +43,5 @@ module.exports = {
 	requestLogger,
 	unknownEndpoint,
 	errorHandler,
+	tokenExtractor,
 };

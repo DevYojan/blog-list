@@ -4,37 +4,25 @@ const User = require('../models/user');
 const jwt = require('jsonwebtoken');
 const { response } = require('express');
 
-const getTokenFrom = (request) => {
-	const authorization = request.get('authorization');
-
-	if (authorization && authorization.toLowerCase().startsWith('bearer')) {
-		return authorization.substring(7);
-	}
-
-	return null;
-};
-
 blogsRouter.get('/', async (req, res) => {
 	const blogs = await Blog.find({}).populate('user', { username: 1, name: 1 });
 	return res.json(blogs.map((blog) => blog.toJSON()));
 });
 
 blogsRouter.post('/', async (req, res) => {
-	const token = getTokenFrom(req);
-
-	if (token === null || token === '') {
+	if (req.token === null || req.token === '') {
 		return res.status(401).json({ error: 'token must be provided' });
 	}
 
 	let decodedToken;
 
 	try {
-		decodedToken = jwt.verify(token, process.env.SECRET);
+		decodedToken = jwt.verify(req.token, process.env.SECRET);
 	} catch (err) {
 		return res.status(401).json({ err: 'token malformed' });
 	}
 
-	if (!token || !decodedToken.id) {
+	if (!req.token || !decodedToken.id) {
 		return res.status(401).json({ error: 'token missing or invalid' });
 	}
 	if (!req.body.likes) {
