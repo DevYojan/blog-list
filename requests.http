@@ -4,11 +4,12 @@ GET http://localhost:3000/api/blogs
 ###
 POST http://localhost:3000/api/blogs
 Content-Type: application/json
+Authorization: bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ1c2VybmFtZSI6InlvamFuIiwiaWQiOiI1ZWZjZDJkZmNiOTM2ZDliZjY2OGZlNDAiLCJpYXQiOjE1OTM3OTk2MTh9.fIkAhjRf36ZFCMh0WlzeOwcxTvVxhKm14F_07bqn8EU
 
 {
   "author": "DevYojan",
   "url": "https://yojanregmi.com.np",
-  "title": "First blog without user"
+  "title": "First blog with token"
 
 }
 

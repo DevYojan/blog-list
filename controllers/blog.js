@@ -1,6 +1,18 @@
 const blogsRouter = require('express').Router();
 const Blog = require('../models/blog');
 const User = require('../models/user');
+const jwt = require('jsonwebtoken');
+const { response } = require('express');
+
+const getTokenFrom = (request) => {
+	const authorization = request.get('authorization');
+
+	if (authorization && authorization.toLowerCase().startsWith('bearer')) {
+		return authorization.substring(7);
+	}
+
+	return null;
+};
 
 blogsRouter.get('/', async (req, res) => {
 	const blogs = await Blog.find({}).populate('user', { username: 1, name: 1 });
@@ -8,6 +20,23 @@ blogsRouter.get('/', async (req, res) => {
 });
 
 blogsRouter.post('/', async (req, res) => {
+	const token = getTokenFrom(req);
+
+	if (token === null || token === '') {
+		return res.status(401).json({ error: 'token must be provided' });
+	}
+
+	let decodedToken;
+
+	try {
+		decodedToken = jwt.verify(token, process.env.SECRET);
+	} catch (err) {
+		return res.status(401).json({ err: 'token malformed' });
+	}
+
+	if (!token || !decodedToken.id) {
+		return res.status(401).json({ error: 'token missing or invalid' });
+	}
 	if (!req.body.likes) {
 		req.body.likes = 0;
 	}
@@ -16,18 +45,18 @@ blogsRouter.post('/', async (req, res) => {
 		return res.status(400).end();
 	}
 
-	const users = await User.find({});
+	const user = await User.findById(decodedToken.id);
 
 	const blog = new Blog({
-		user: users[0]._id,
+		user: user._id,
 		title: req.body.title,
 		url: req.body.url,
 		author: req.body.author,
 		likes: req.body.likes,
 	});
 	const savedBlog = await blog.save();
-	users[0].blogs = users[0].blogs.concat(savedBlog._id);
-	await users[0].save();
+	user.blogs = user.blogs.concat(savedBlog._id);
+	await user.save();
 
 	return res.status(201).json(savedBlog.toJSON());
 });
