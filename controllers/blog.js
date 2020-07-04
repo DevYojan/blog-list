@@ -2,7 +2,7 @@ const blogsRouter = require('express').Router();
 const Blog = require('../models/blog');
 const User = require('../models/user');
 const jwt = require('jsonwebtoken');
-const { response } = require('express');
+const { response, request } = require('express');
 
 blogsRouter.get('/', async (req, res) => {
 	const blogs = await Blog.find({}).populate('user', { username: 1, name: 1 });
@@ -50,7 +50,30 @@ blogsRouter.post('/', async (req, res) => {
 });
 
 blogsRouter.delete('/:id', async (req, res) => {
-	await Blog.findByIdAndRemove(req.params.id);
+	if (req.token === null) {
+		return res.status(401).json({ err: 'Token must be provided' });
+	}
+
+	let decodedToken;
+
+	try {
+		decodedToken = jwt.verify(req.token, process.env.SECRET);
+	} catch (err) {
+		return res.status(401).json({ err: 'malformed token or token missing' });
+	}
+
+	const blog = await Blog.findById(req.params.id);
+
+	if (blog === null) {
+		return res.json({ err: 'The blog you are trying to delete doesnt exist' });
+	}
+
+	if (!(decodedToken.id.toString() === blog.user.toString())) {
+		return res.status(501).json({ err: 'unauthorized access' });
+	}
+
+	await blog.remove();
+
 	res.status(204).end();
 });
 
