@@ -40,10 +40,10 @@ const initialBlog = [
 	},
 ];
 
-const blogsInDb = async () => {
+async function blogsInDb() {
 	const blogs = await Blog.find({});
-	return blogs.map((blog) => blog.toJSON());
-};
+	return blogs;
+}
 
 const usersInDb = async () => {
 	const users = await User.find({});
