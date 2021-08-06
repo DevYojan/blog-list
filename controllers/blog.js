@@ -1,17 +1,17 @@
-const blogsRouter = require('express').Router();
-const Blog = require('../models/blog');
-const User = require('../models/user');
-const jwt = require('jsonwebtoken');
-const { response, request } = require('express');
+const blogsRouter = require("express").Router();
+const Blog = require("../models/blog");
+const User = require("../models/user");
+const jwt = require("jsonwebtoken");
+const { response, request } = require("express");
 
-blogsRouter.get('/', async (req, res) => {
-	const blogs = await Blog.find({}).populate('user', { username: 1, name: 1 });
+blogsRouter.get("/", async (req, res) => {
+	const blogs = await Blog.find({}).populate("user", { username: 1, name: 1 });
 	return res.json(blogs.map((blog) => blog.toJSON()));
 });
 
-blogsRouter.post('/', async (req, res) => {
-	if (req.token === null || req.token === '') {
-		return res.status(401).json({ error: 'token must be provided' });
+blogsRouter.post("/", async (req, res) => {
+	if (req.token === null || req.token === "") {
+		return res.status(401).json({ error: "token must be provided" });
 	}
 
 	let decodedToken;
@@ -19,11 +19,11 @@ blogsRouter.post('/', async (req, res) => {
 	try {
 		decodedToken = jwt.verify(req.token, process.env.SECRET);
 	} catch (err) {
-		return res.status(401).json({ err: 'token malformed' });
+		return res.status(401).json({ err: "token malformed" });
 	}
 
 	if (!req.token || !decodedToken.id) {
-		return res.status(401).json({ error: 'token missing or invalid' });
+		return res.status(401).json({ error: "token missing or invalid" });
 	}
 	if (!req.body.likes) {
 		req.body.likes = 0;
@@ -40,7 +40,7 @@ blogsRouter.post('/', async (req, res) => {
 		title: req.body.title,
 		url: req.body.url,
 		author: req.body.author,
-		likes: req.body.likes,
+		likes: 0,
 	});
 	const savedBlog = await blog.save();
 	user.blogs = user.blogs.concat(savedBlog._id);
@@ -49,9 +49,9 @@ blogsRouter.post('/', async (req, res) => {
 	return res.status(201).json(savedBlog.toJSON());
 });
 
-blogsRouter.delete('/:id', async (req, res) => {
+blogsRouter.delete("/:id", async (req, res) => {
 	if (req.token === null) {
-		return res.status(401).json({ err: 'Token must be provided' });
+		return res.status(401).json({ err: "Token must be provided" });
 	}
 
 	let decodedToken;
@@ -59,17 +59,17 @@ blogsRouter.delete('/:id', async (req, res) => {
 	try {
 		decodedToken = jwt.verify(req.token, process.env.SECRET);
 	} catch (err) {
-		return res.status(401).json({ err: 'malformed token or token missing' });
+		return res.status(401).json({ err: "malformed token or token missing" });
 	}
 
 	const blog = await Blog.findById(req.params.id);
 
 	if (blog === null) {
-		return res.json({ err: 'The blog you are trying to delete doesnt exist' });
+		return res.json({ err: "The blog you are trying to delete doesnt exist" });
 	}
 
 	if (!(decodedToken.id.toString() === blog.user.toString())) {
-		return res.status(501).json({ err: 'unauthorized access' });
+		return res.status(501).json({ err: "unauthorized access" });
 	}
 
 	await blog.remove();
@@ -77,11 +77,15 @@ blogsRouter.delete('/:id', async (req, res) => {
 	res.status(204).end();
 });
 
-blogsRouter.put('/:id', async (req, res) => {
-	const body = req.body;
+blogsRouter.put("/:id", async (req, res) => {
+	let blog = await Blog.findById(req.params.id);
 
-	const blog = {
-		likes: req.body.likes,
+	if (blog === null) {
+		return res.json({ err: "The blog you are trying to like doesnt exist" });
+	}
+
+	blog = {
+		likes: blog.likes + 1,
 	};
 
 	const updatedBlog = await Blog.findByIdAndUpdate(req.params.id, blog, {
