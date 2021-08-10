@@ -10,6 +10,7 @@ blogsRouter.get('/', async (req, res) => {
 });
 
 blogsRouter.post('/', async (req, res) => {
+  console.log(req.token);
   if (req.token === null || req.token === '') {
     return res.status(401).json({ error: 'token must be provided' });
   }
@@ -34,6 +35,7 @@ blogsRouter.post('/', async (req, res) => {
   }
 
   const user = await User.findById(decodedToken.id);
+  console.log(user);
 
   const blog = new Blog({
     user: user,
